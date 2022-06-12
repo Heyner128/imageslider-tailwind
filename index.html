@@ -96,13 +96,13 @@
                                 
                                 if(index+1>=activeImage) {
                                     for(let i=0;i<index+1-activeImage;i++) {
-                                        setTimeout(moveSlider,i*20,'left');
+                                        setTimeout(moveSlider,i*10,'left');
                                         console.log(i);
                                     }
 
                                 } else {
                                     for(let i=0;i<activeImage-(index+1);i++) {
-                                        setTimeout(moveSlider,i*20,'right');
+                                        setTimeout(moveSlider,i*10,'right');
                                     }
                                 }
                             }
