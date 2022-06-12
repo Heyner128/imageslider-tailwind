@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleOutput.css">
+    <title>Image Slider</title>
+</head>
+<body>
+
+    <div class="h-[85vh]" >
+
+        <div id="main-container" class="relative flex justify-center bg-gradient-to-tr from-fuchsia-300 to-blue-500 w-full h-5/6 lg:w-[70rem] md:w-full lg:h-[50rem] sm:h-[30rem]">
+        
+            <div class="flex order-1 scale-x-[0.6] lg:scale-x-[0.7]  skew-y-12 w-28 lg:w-44 h-5/6 self-center backdrop-blur-sm bg-white/30 drop-shadow-lg shadow rounded-lg transition-transform sm:transition-[transform,width] duration-1000 sm: duration-200 ease-in-out">
+                <img src="" alt="" class="p-4 self-center object-cover  w-full blur-[1px] h-3/4 opacity-70 ">
+            </div>
+            <div class="order-2 w-full sm:w-4/6 lg:w-3/6 mt-5 h-5/6  self-center backdrop-blur-sm bg-white/30 drop-shadow-lg shadow rounded-lg transition-transform sm:transition-[transform,width] duration-1000 sm: duration-200 ease-in-out">
+                <img src="" alt="" class="p-6 object-contain w-full h-full ">
+            </div>
+            <div class="flex order-3 scale-x-[0.6] lg:scale-x-[0.7] -skew-y-12 w-28 lg:w-44 h-5/6  self-center backdrop-blur-sm bg-white/30 drop-shadow-lg shadow rounded-lg transition-transform sm:transition-[trasnsform,width] duration-1000 sm:duration-200 ease-in-out">
+                    <img src="" alt="" class="p-4 self-center  object-cover h-3/4 blur-[1px] w-full opacity-70">   
+            </div>
+    
+            <div class="absolute flex w-2/3 justify-around gap-52 sm:gap-60 self-center">
+                <button class="text-white font-bold bg-black/40 w-8 h-8 rounded-full" onclick="moveSlider('right')"><</button>
+                <button class="text-white font-bold bg-black/40 w-8 h-8 rounded-full" onclick="moveSlider('left')">></button>
+            </div>
+    
+            <div id="bottom-buttons" class="absolute flex w-48 justify-around self-end mb-5">
+            </div>
+        </div>
+
+    </div>
+    
+
+    
+
+    <script>
+
+        const images = [
+            "https://i.picsum.photos/id/0/5616/3744.jpg?hmac=3GAAioiQziMGEtLbfrdbcoenXoWAW-zlyEAMkfEdBzQ",
+            "https://i.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_ebchx3WwzbM-Z4_KC_LeLBWr5LZMaAkWkF68",
+            "https://i.picsum.photos/id/1003/1181/1772.jpg?hmac=oN9fHMXiqe9Zq2RM6XT-RVZkojgPnECWwyEF1RvvTZk",
+            "https://i.picsum.photos/id/1008/5616/3744.jpg?hmac=906z84ml4jhqPMsm4ObF9aZhCRC-t2S_Sy0RLvYWZwY",
+            "https://i.picsum.photos/id/1015/6000/4000.jpg?hmac=aHjb0fRa1t14DTIEBcoC12c5rAXOSwnVlaA5ujxPQ0I",
+            "https://i.picsum.photos/id/102/4320/3240.jpg?hmac=ico2KysoswVG8E8r550V_afIWN963F6ygTVrqHeHeRc",
+            "https://i.picsum.photos/id/1024/1920/1280.jpg?hmac=-PIpG7j_fRwN8Qtfnsc3M8-kC3yb0XYOBfVzlPSuVII",
+            "https://i.picsum.photos/id/1027/2848/4272.jpg?hmac=EAR-f6uEqI1iZJjB6-NzoZTnmaX0oI0th3z8Y78UpKM",
+            "https://i.picsum.photos/id/1033/2048/1365.jpg?hmac=zEuPfX7t6U866nzXjWF41bf-uxkKOnf1dDrHXmhcK-Q",
+            "https://i.picsum.photos/id/1043/5184/3456.jpg?hmac=wsz2e0aFKEI0ij7mauIr2nFz2pzC8xNlgDHWHYi9qbc"
+            
+        ];
+
+
+
+
+
+
+
+
+        const leftCardClass = ["flex", "order-1","scale-x-[0.6]", "lg:scale-x-[0.7]", "skew-y-12","w-28" ,"lg:w-44"];
+        const leftImageCardClass = ["self-center", "p-4", "object-cover", "h-3/4", "blur-[1px]", "opacity-70"];
+        const centerCardClass = ["order-2", "w-full", "mt-5", "sm:w-4/6", "lg:w-3/6"];
+        const centerImageCardClass = ["p-6", "object-contain", "h-full"];
+        const rightCardClass = ["flex", "order-3","scale-x-[0.6]", , "lg:scale-x-[0.7]","-skew-y-12","w-28","lg:w-44"];
+        const rightImageCardClass = ["self-center", "p-4", "object-cover", "h-3/4", "blur-[1px]", "opacity-70"];
+
+        let startX = 0;
+        let endX = 0;
+
+        let activeImage = 0;
+
+
+        (
+            function () {
+
+                document.querySelector('#main-container').addEventListener('touchstart', touchHandler);
+
+                document.querySelector('#main-container').addEventListener('touchend', touchHandler);
+
+                appendImages();
+                
+                const circles = document.querySelector('#bottom-buttons');
+                images.forEach(()=>{
+                    circles.innerHTML = circles.innerHTML + '<button class="text-white font-bold bg-black/40 w-4 h-4 rounded-full"></button>';
+                })
+                
+                const circlesButtons = document.querySelectorAll('#bottom-buttons button');
+
+                circlesButtons.forEach(
+                    (element, index) => {
+                        element.addEventListener('click', 
+                            (event) => {
+                                
+                                if(index+1>=activeImage) {
+                                    for(let i=0;i<index+1-activeImage;i++) {
+                                        setTimeout(moveSlider,i*20,'left');
+                                        console.log(i);
+                                    }
+
+                                } else {
+                                    for(let i=0;i<activeImage-(index+1);i++) {
+                                        setTimeout(moveSlider,i*20,'right');
+                                    }
+                                }
+                            }
+
+                        )
+                    }
+                )
+
+                iluminateCircle('left');
+            }
+            
+        )();
+
+
+
+        function touchHandler(evt) {
+            
+            if(evt.type=='touchstart') startX=evt.changedTouches[0].screenX;
+
+            if(evt.type=='touchend') {
+                endX=evt.changedTouches[0].screenX;
+                if(Math.abs(startX-endX)>30) startX>endX?moveSlider('left'):moveSlider('right');
+            }
+        }
+        
+
+        function iluminateCircle(direction) {
+            const circles = document.querySelectorAll('#bottom-buttons button');
+            
+            if(direction=='right') {
+                activeImage--;
+                if(activeImage<1) activeImage=circles.length;
+            } else {
+                activeImage++;
+                if(activeImage>circles.length) activeImage=1;
+            }
+            
+            
+            circles.forEach((e,i)=> {
+                if(i==activeImage-1) {
+                    e.classList.remove('bg-black/40');
+                    e.classList.add('bg-white/40');
+                } else {
+                    e.classList.remove('bg-white/40');
+                    e.classList.add('bg-black/40');
+                }
+            })
+        }
+
+        function appendImages() {
+
+            const numImg = document.querySelectorAll('#main-container img').length
+
+            for(let i=0;i<numImg;i++) {
+                let img  = document.querySelector('#main-container .order-' + (i+1) + ' img');
+                img.setAttribute('src', images[i]);
+            }
+
+        }
+
+
+        function moveSlider(direction) {
+            const mainContainer = document.querySelectorAll('#main-container div')
+            let leftNode  = null;
+            let leftNodeImage  = null;
+            let centerNode  = null;
+            let centerNodeImage  = null;
+            let rightNode = null;
+            let rightNodeImage  = null;
+
+            mainContainer.forEach(
+                function(card)  {
+                    if(card.classList.contains("order-1")){
+                        leftNode=card;
+                        leftNodeImg = document.querySelector('#main-container .order-1 img');
+                    }
+                    if(card.classList.contains("order-2")) {
+                        centerNode=card;
+                        centerNodeImg = document.querySelector('#main-container .order-2 img');
+                    } 
+                    if(card.classList.contains("order-3")) {
+                        rightNode=card;
+                        rightNodeImg = document.querySelector('#main-container .order-3 img');
+                    } 
+                }
+            )
+
+            rightNode.classList.remove(...rightCardClass);
+            leftNode.classList.remove(...leftCardClass);
+            centerNode.classList.remove(...centerCardClass);
+
+            rightNodeImg.classList.remove(...rightImageCardClass);
+            leftNodeImg.classList.remove(...leftImageCardClass);
+            centerNodeImg.classList.remove(...centerImageCardClass);
+            
+            if(direction=='left') {
+
+                
+
+                rightNode.classList.add(...centerCardClass);
+                centerNode.classList.add(...leftCardClass);
+                leftNode.classList.add(...rightCardClass);
+
+                rightNodeImg.classList.add(...centerImageCardClass);
+                centerNodeImg.classList.add(...leftImageCardClass);
+                leftNodeImg.classList.add(...rightImageCardClass);
+
+                images.push(images.shift());
+                appendImages();
+                iluminateCircle(direction)
+            } else if(direction=='right'){
+
+                
+
+                rightNode.classList.add(...leftCardClass);
+                centerNode.classList.add(...rightCardClass);
+                leftNode.classList.add(...centerCardClass);
+
+                rightNodeImg.classList.add(...leftImageCardClass);
+                centerNodeImg.classList.add(...rightImageCardClass);
+                leftNodeImg.classList.add(...centerImageCardClass);
+
+                images.unshift(images.pop());
+                appendImages();                
+                iluminateCircle(direction);
+            }
+        }
+
+
+    </script>
+    
+</body>
+</html>
